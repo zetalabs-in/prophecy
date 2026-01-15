@@ -152,7 +152,7 @@ async function generateProphecy(params: { apiKey: string, style?: string, source
             <rect x="60" y="60" width="${width - 120}" height="${height - 120}" fill="none" stroke="${currentStyle.accent}" stroke-width="4" opacity="0.5" />
 
             <!-- Main Quote -->
-            <text x="${width / 2}" y="${height * 0.35}" text-anchor="middle" fill="${currentStyle.text}" font-family="${currentStyle.font}, Georgia, serif" font-size="84" font-weight="700" style="text-shadow: 0 0 30px ${currentStyle.accent};">
+            <text x="${width / 2}" y="${height * 0.35}" text-anchor="middle" fill="${currentStyle.text}" font-family="${currentStyle.font === 'serif' ? 'serif' : 'sans-serif'}" font-size="84" font-weight="700">
                 ${quoteTspans}
             </text>
 
@@ -160,7 +160,7 @@ async function generateProphecy(params: { apiKey: string, style?: string, source
             <rect x="${(width - 120) / 2}" y="${height * 0.35 + (quoteLines.length * 100) + 40}" width="120" height="6" fill="${currentStyle.accent}" rx="3" />
 
             <!-- Author -->
-            <text x="${width / 2}" y="${height * 0.35 + (quoteLines.length * 100) + 140}" text-anchor="middle" fill="${currentStyle.sub}" font-family="${currentStyle.font}, Georgia, serif" font-size="42" font-weight="400" letter-spacing="2" text-transform="uppercase">
+            <text x="${width / 2}" y="${height * 0.35 + (quoteLines.length * 100) + 140}" text-anchor="middle" fill="${currentStyle.sub}" font-family="${currentStyle.font === 'serif' ? 'serif' : 'sans-serif'}" font-size="42" font-weight="400" letter-spacing="2" text-transform="uppercase">
                 ${author}
             </text>
             
