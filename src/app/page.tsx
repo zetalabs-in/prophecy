@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight, Download, Sparkles, HelpCircle } from "lucide-react";
 import MagneticButton from "@/components/MagneticButton";
 import WallpaperDisplay from "@/components/WallpaperDisplay";
 
@@ -95,9 +95,21 @@ export default function Home() {
             className="mt-8 flex w-full flex-col gap-6 rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-md"
           >
             <div>
-              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/30">
-                Gemini API Key
-              </label>
+              <div className="mb-2 flex items-center justify-between">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/30">
+                  Gemini API Key
+                </label>
+                <a
+                  href="https://aistudio.google.com/app/apikey"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-[10px] text-purple-400 hover:text-purple-300 transition-colors"
+                  title="Get your API Key from Google AI Studio"
+                >
+                  <span>Get Key</span>
+                  <HelpCircle size={12} />
+                </a>
+              </div>
               <input
                 type="password"
                 value={apiKey}

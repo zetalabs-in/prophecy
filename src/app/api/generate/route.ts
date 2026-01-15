@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import sharp from 'sharp';
+import fs from 'fs';
+import path from 'path';
 
 async function generateProphecy(params: { apiKey: string, style?: string, source?: string, mode?: string }) {
     const { apiKey, style, source, mode } = params;
@@ -122,6 +124,23 @@ async function generateProphecy(params: { apiKey: string, style?: string, source
 
     const currentStyle = styles[style as string] || styles["mystic"];
 
+    // Helper to sanitize text (replace smart quotes, etc.)
+    const sanitizeText = (text: string) => {
+        return text
+            .replace(/[\u2018\u2019]/g, "'") // Smart single quotes
+            .replace(/[\u201C\u201D]/g, '"') // Smart double quotes
+            .replace(/[\u2013\u2014]/g, "-") // Em/En dashes
+            .replace(/\.\.\./g, "...");      // Ellipsis
+    };
+
+    const cleanQuote = sanitizeText(quote);
+    const cleanAuthor = sanitizeText(author);
+
+    // Load Font
+    const fontPath = path.join(process.cwd(), 'src/fonts/Cinzel-Regular.ttf');
+    const fontBuffer = fs.readFileSync(fontPath);
+    const fontBase64 = fontBuffer.toString('base64');
+
     // Helper to wrap text for SVG
     const wrapText = (text: string, maxCharsPerLine: number) => {
         const words = text.split(" ");
@@ -140,19 +159,29 @@ async function generateProphecy(params: { apiKey: string, style?: string, source
         return lines;
     };
 
-    const quoteLines = wrapText(quote, 20); // Wrap at ~20 chars for large text
+    const quoteLines = wrapText(cleanQuote, 20); // Wrap at ~20 chars for large text
     const quoteTspans = quoteLines.map((line, i) =>
         `<tspan x="${width / 2}" dy="${i === 0 ? 0 : '1.2em'}">${line}</tspan>`
     ).join("");
 
-    // SVG Template - Native SVG Text (No foreignObject)
+    // SVG Template - Native SVG Text with Embedded Font
     const svg = `
         <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <style>
+                    @font-face {
+                        font-family: 'Cinzel';
+                        src: url('data:font/ttf;base64,${fontBase64}') format('truetype');
+                        font-weight: normal;
+                        font-style: normal;
+                    }
+                </style>
+            </defs>
             <rect width="${width}" height="${height}" style="fill: ${currentStyle.bg};" />
             <rect x="60" y="60" width="${width - 120}" height="${height - 120}" fill="none" stroke="${currentStyle.accent}" stroke-width="4" opacity="0.5" />
 
             <!-- Main Quote -->
-            <text x="${width / 2}" y="${height * 0.35}" text-anchor="middle" fill="${currentStyle.text}" font-family="${currentStyle.font === 'serif' ? 'serif' : 'sans-serif'}" font-size="84" font-weight="700">
+            <text x="${width / 2}" y="${height * 0.35}" text-anchor="middle" fill="${currentStyle.text}" font-family="'Cinzel', serif" font-size="84" font-weight="700">
                 ${quoteTspans}
             </text>
 
@@ -160,8 +189,8 @@ async function generateProphecy(params: { apiKey: string, style?: string, source
             <rect x="${(width - 120) / 2}" y="${height * 0.35 + (quoteLines.length * 100) + 40}" width="120" height="6" fill="${currentStyle.accent}" rx="3" />
 
             <!-- Author -->
-            <text x="${width / 2}" y="${height * 0.35 + (quoteLines.length * 100) + 140}" text-anchor="middle" fill="${currentStyle.sub}" font-family="${currentStyle.font === 'serif' ? 'serif' : 'sans-serif'}" font-size="42" font-weight="400" letter-spacing="2" text-transform="uppercase">
-                ${author}
+            <text x="${width / 2}" y="${height * 0.35 + (quoteLines.length * 100) + 140}" text-anchor="middle" fill="${currentStyle.sub}" font-family="'Cinzel', serif" font-size="42" font-weight="400" letter-spacing="2" text-transform="uppercase">
+                ${cleanAuthor}
             </text>
             
             <!-- Footer -->
