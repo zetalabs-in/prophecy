@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Download, Sparkles, HelpCircle } from "lucide-react";
+import { Sparkles, ArrowRight } from "lucide-react";
 import MagneticButton from "@/components/MagneticButton";
 import WallpaperDisplay from "@/components/WallpaperDisplay";
 
@@ -70,46 +70,34 @@ export default function Home() {
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-auto bg-black p-4 text-white selection:bg-purple-500/30">
-      <div className="z-10 flex w-full max-w-7xl flex-col gap-12 py-10 lg:flex-row lg:items-start lg:justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 flex w-full flex-col items-center justify-center pt-8 pb-4 text-center"
+      >
+        <h1 className="bg-gradient-to-b from-white to-white/40 bg-clip-text text-5xl font-bold text-transparent md:text-7xl tracking-tighter">
+          Prophecy
+        </h1>
+        <p className="mt-4 text-white/50">
+          Digital divination for your lockscreen.
+        </p>
+      </motion.div>
+
+      <div className="z-10 flex w-full max-w-[90rem] flex-col gap-8 py-6 lg:flex-row lg:items-start lg:justify-center px-4">
 
         {/* Left Column: Title & Form */}
-        <div className="flex w-full flex-col items-center lg:w-1/2 lg:max-w-xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <h1 className="bg-gradient-to-b from-white to-white/40 bg-clip-text text-5xl font-bold text-transparent md:text-7xl tracking-tighter">
-              Prophecy
-            </h1>
-            <p className="mt-4 text-white/50">
-              Digital divination for your lockscreen.
-            </p>
-          </motion.div>
-
+        <div className="flex w-full flex-col items-center lg:w-1/3 lg:max-w-md">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="mt-8 flex w-full flex-col gap-6 rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-md"
+            className="flex w-full flex-col gap-6 rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-md"
           >
             <div>
-              <div className="mb-2 flex items-center justify-between">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-white/30">
-                  Gemini API Key
-                </label>
-                <a
-                  href="https://aistudio.google.com/app/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-[10px] text-purple-400 hover:text-purple-300 transition-colors"
-                  title="Get your API Key from Google AI Studio"
-                >
-                  <span>Get Key</span>
-                  <HelpCircle size={12} />
-                </a>
-              </div>
+              <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/30">
+                Gemini API Key
+              </label>
               <input
                 type="password"
                 value={apiKey}
@@ -197,7 +185,7 @@ export default function Home() {
             </MagneticButton>
 
             {/* API Shortcut Section */}
-            <div className="mt-6 w-full rounded-2xl border border-white/5 bg-white/5 p-4">
+            <div className="w-full rounded-2xl border border-white/5 bg-white/5 p-4">
               <div className="mb-2 flex items-center justify-between">
                 <label className="text-xs font-semibold uppercase tracking-wider text-white/30">
                   Automation Shortcut
@@ -235,8 +223,69 @@ export default function Home() {
 
         </div>
 
+        {/* Middle Column: Automation Instructions */}
+        <div className="flex w-full flex-col items-center lg:w-1/3 lg:max-w-md lg:sticky lg:top-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="flex w-full flex-col gap-6 rounded-3xl border border-white/5 bg-white/5 p-6 backdrop-blur-md"
+          >
+            <div className="flex flex-col items-center text-center">
+              <h2 className="text-xl font-bold text-white mb-1">Automation Setup</h2>
+              <p className="text-xs text-white/50">Run Prophecy automatically every morning.</p>
+            </div>
+
+            {/* Step 1: Install */}
+            <div>
+              <div className="mb-2 flex items-center justify-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold">1</span>
+                <h3 className="text-sm font-semibold text-white/80">Install Shortcut</h3>
+              </div>
+              <a
+                href="https://www.icloud.com/shortcuts/f17536970dfe4060a65d7754519f1115"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3998EB] p-3 text-sm font-bold text-white shadow-lg shadow-blue-500/20 transition-transform active:scale-95 hover:bg-[#2F88D4]"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M16.35 3.56a4.34 4.34 0 1 1 2.37 8.35 4.34 4.34 0 0 1-4.7-1.12l-1.09-1.09a2.53 2.53 0 0 0-3.58 0l-5.69 5.69a2.52 2.52 0 0 0 0 3.57 2.53 2.53 0 0 0 3.58 0L8.33 17.88a4.34 4.34 0 0 1 1.12 4.71 4.34 4.34 0 1 1-8.35-2.37l5.4-5.41a6.83 6.83 0 0 1 9.67 0l1.09 1.09a.36.36 0 0 0 .51 0l5.69-5.69a.35.35 0 0 0 0-.51l-.11-.11Z" />
+                </svg>
+                Get iCloud Shortcut
+              </a>
+            </div>
+
+            {/* Step 2: Create Automation */}
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold">2</span>
+                <h3 className="text-sm font-semibold text-white/80">Create Daily Automation</h3>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-black/20 p-3 text-xs text-white/60 space-y-2">
+                <p>1. Open <strong className="text-white">Shortcuts App</strong> → <strong className="text-white">Automation</strong>.</p>
+                <p>2. Tap <strong className="text-white">+</strong> (New Automation).</p>
+                <p>3. Select <strong className="text-white">Time of Day</strong> (e.g., 7:00 AM).</p>
+                <p>4. Select <strong className="text-white">Run Immediately</strong>.</p>
+                <p>5. Tap <strong className="text-white">Next</strong>, verify setup, and save.</p>
+              </div>
+            </div>
+
+            {/* Step 3: Configure URL */}
+            <div>
+              <div className="mb-2 flex items-center gap-2">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/10 text-[10px] font-bold">3</span>
+                <h3 className="text-sm font-semibold text-white/80">Configure Action</h3>
+              </div>
+              <div className="rounded-xl border border-white/5 bg-black/20 p-3 text-xs text-white/60 space-y-2">
+                <p>The shortcut will run the selected action automatically.</p>
+                <p className="text-yellow-400/80">⚠️ Important: Make sure to paste the URL below into the shortcut if prompted or if editing manually.</p>
+              </div>
+            </div>
+
+          </motion.div>
+        </div>
         {/* Right Column: Preview */}
-        <div className="flex w-full justify-center lg:w-1/2 lg:sticky lg:top-10">
+        <div className="flex w-full justify-center lg:w-1/3 lg:sticky lg:top-10">
           <WallpaperDisplay svgContent={svgContent} loading={loading} quote={currentQuote} />
         </div>
 
