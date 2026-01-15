@@ -290,6 +290,17 @@ export default function Home() {
         </div>
 
       </div>
+
+      {/* Buy Me a Coffee Link */}
+      <a
+        href="https://buymeacoffee.com/deosaju"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur-md transition-transform hover:scale-105 hover:bg-black/60 active:scale-95"
+      >
+        <span>☕</span>
+        <span>Buy me a coffee</span>
+      </a>
     </main >
   );
 }
