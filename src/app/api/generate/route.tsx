@@ -40,23 +40,25 @@ async function generateProphecy(params: { apiKey: string, style?: string, source
     // Step 1: Generate the Quote using Gemini
     const seed = Math.floor(Math.random() * 1000000);
     const prompt = `
-            Act as a spiritual scholar and curator.
+            Act as a spiritual curator.
             Generate a UNIQUE, powerful quote from the **${currentSource}**.
             
             Theme/Mode: **${currentMode}**. 
-            (Ensure the quote specifically relates to ${currentMode}).
-            
-            Style Context: ${currentStyleInstruction}
+            Visual Style: ${currentStyleInstruction}
             
             Random Seed: ${seed}
             Maximum length: 30 words.
             
-            Return a JSON object with:
-            - "quote": The text of the verse/sloka.
-            - "author": The specific reference (e.g., "Isaiah 40:1", "Surah Al-Sharh 94:5", "Bhagavad Gita 2.47").
+            STRICT INSTRUCTION:
+            Return ONLY a raw JSON object. No markdown, no "\`\`\`json" wrappers, no intro text, no labels like "Theme: ".
             
-            Example JSON: { "quote": "Your quote text here.", "author": "Book Reference 1:1" }
-            DO NOT return markdown code blocks, just the raw JSON string.
+            JSON Structure:
+            { 
+              "quote": "The exact text of the verse or quote.", 
+              "author": "Name of Author & Reference (e.g. John 1:5)" 
+            }
+            
+            Ensure "author" contains ONLY the source name / reference, nothing else.
         `;
 
     let quote = "";
