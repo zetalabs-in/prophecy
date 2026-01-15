@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
+import satori from 'satori';
 
 async function generateProphecy(params: { apiKey: string, style?: string, source?: string, mode?: string }) {
     const { apiKey, style, source, mode } = params;
@@ -124,79 +125,129 @@ async function generateProphecy(params: { apiKey: string, style?: string, source
 
     const currentStyle = styles[style as string] || styles["mystic"];
 
-    // Helper to sanitize text (replace smart quotes, etc.)
-    const sanitizeText = (text: string) => {
-        return text
-            .replace(/[\u2018\u2019]/g, "'") // Smart single quotes
-            .replace(/[\u201C\u201D]/g, '"') // Smart double quotes
-            .replace(/[\u2013\u2014]/g, "-") // Em/En dashes
-            .replace(/\.\.\./g, "...");      // Ellipsis
-    };
-
-    const cleanQuote = sanitizeText(quote);
-    const cleanAuthor = sanitizeText(author);
-
-    // Load Font
+    // Load Font (Cinzel)
     const fontPath = path.join(process.cwd(), 'src/fonts/Cinzel-Regular.ttf');
     const fontBuffer = fs.readFileSync(fontPath);
-    const fontBase64 = fontBuffer.toString('base64');
 
-    // Helper to wrap text for SVG
-    const wrapText = (text: string, maxCharsPerLine: number) => {
-        const words = text.split(" ");
-        const lines: string[] = [];
-        let currentLine = words[0];
+    // Satori Template (React JSX)
+    // We use a large flex container with the style's visual properties
+    const svg = await satori(
+        <div
+            style={{
+                height: '100%',
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                background: currentStyle.bg,
+                position: 'relative',
+            }}
+        >
+            {/* Border Frame */}
+            <div
+                style={{
+                    position: 'absolute',
+                    top: 60,
+                    left: 60,
+                    right: 60,
+                    bottom: 60,
+                    border: `4px solid ${currentStyle.accent}`,
+                    opacity: 0.5,
+                }}
+            />
 
-        for (let i = 1; i < words.length; i++) {
-            if (currentLine.length + 1 + words[i].length <= maxCharsPerLine) {
-                currentLine += " " + words[i];
-            } else {
-                lines.push(currentLine);
-                currentLine = words[i];
-            }
+            {/* Content Container */}
+            <div
+                style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    width: '70%',
+                }}
+            >
+                {/* Quote */}
+                <p
+                    style={{
+                        margin: 0,
+                        padding: 0,
+                        fontSize: 84,
+                        fontFamily: 'Cinzel',
+                        fontWeight: 700,
+                        lineHeight: 1.3,
+                        color: currentStyle.text,
+                        textAlign: 'center',
+                    }}
+                >
+                    "{quote}"
+                </p>
+
+                {/* Separator */}
+                <div
+                    style={{
+                        marginTop: 80,
+                        marginBottom: 60,
+                        width: 120,
+                        height: 6,
+                        backgroundColor: currentStyle.accent,
+                        borderRadius: 3,
+                    }}
+                />
+
+                {/* Author */}
+                <p
+                    style={{
+                        margin: 0,
+                        fontSize: 42,
+                        fontFamily: 'Cinzel',
+                        fontWeight: 400,
+                        letterSpacing: 2,
+                        color: currentStyle.sub,
+                        textTransform: 'uppercase',
+                        textAlign: 'center',
+                    }}
+                >
+                    {author}
+                </p>
+            </div>
+
+            {/* Footer */}
+            <p
+                style={{
+                    position: 'absolute',
+                    bottom: 120,
+                    fontSize: 32,
+                    fontFamily: 'sans-serif',
+                    letterSpacing: 8,
+                    color: currentStyle.text,
+                    opacity: 0.3,
+                    margin: 0,
+                }}
+            >
+                PROPHECY
+            </p>
+        </div>,
+        {
+            width,
+            height,
+            fonts: [
+                {
+                    name: 'Cinzel',
+                    data: fontBuffer,
+                    weight: 400,
+                    style: 'normal',
+                },
+                {
+                    name: 'Cinzel',
+                    data: fontBuffer,
+                    weight: 700,
+                    style: 'normal',
+                }
+            ],
         }
-        lines.push(currentLine);
-        return lines;
-    };
-
-    const quoteLines = wrapText(cleanQuote, 20); // Wrap at ~20 chars for large text
-    const quoteTspans = quoteLines.map((line, i) =>
-        `<tspan x="${width / 2}" dy="${i === 0 ? 0 : '1.2em'}">${line}</tspan>`
-    ).join("");
-
-    // SVG Template - Native SVG Text with Embedded Font
-    const svg = `
-        <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <style>
-                    @font-face {
-                        font-family: 'Cinzel';
-                        src: url('data:font/ttf;base64,${fontBase64}') format('truetype');
-                        font-weight: normal;
-                        font-style: normal;
-                    }
-                </style>
-            </defs>
-            <rect width="${width}" height="${height}" style="fill: ${currentStyle.bg};" />
-            <rect x="60" y="60" width="${width - 120}" height="${height - 120}" fill="none" stroke="${currentStyle.accent}" stroke-width="4" opacity="0.5" />
-
-            <!-- Main Quote -->
-            <text x="${width / 2}" y="${height * 0.35}" text-anchor="middle" fill="${currentStyle.text}" font-family="'Cinzel', serif" font-size="84" font-weight="700">
-                ${quoteTspans}
-            </text>
-
-            <!-- Separator Line -->
-            <rect x="${(width - 120) / 2}" y="${height * 0.35 + (quoteLines.length * 100) + 40}" width="120" height="6" fill="${currentStyle.accent}" rx="3" />
-
-            <!-- Author -->
-            <text x="${width / 2}" y="${height * 0.35 + (quoteLines.length * 100) + 140}" text-anchor="middle" fill="${currentStyle.sub}" font-family="'Cinzel', serif" font-size="42" font-weight="400" letter-spacing="2" text-transform="uppercase">
-                ${cleanAuthor}
-            </text>
-            
-            <!-- Footer -->
-            <text x="${width / 2}" y="${height - 150}" text-anchor="middle" fill="${currentStyle.text}" opacity="0.3" font-family="sans-serif" font-size="32" letter-spacing="8">PROPHECY</text>
-        </svg>
-        `.trim();
+    );
 
     return { svg, quote };
 }
